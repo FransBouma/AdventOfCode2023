@@ -83,7 +83,7 @@ namespace AoC2023.Core
 					intermediateResult = ReplaceDigitName(maxIndex, toUseForReplace, intermediateResult);
 				}
 
-				//Console.WriteLine("Original: '{0}'. New: '{1}'", originalString, intermediateResult);
+				Console.WriteLine("Original: '{0}'. New: '{1}'", originalString, intermediateResult);
 				input[i] = intermediateResult;
 			}
 			return CalculateValues(input).Sum();
