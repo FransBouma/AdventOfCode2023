@@ -6,14 +6,14 @@ using System.Linq;
 
 namespace AoC2023.Core
 {
-	public class SymbolInfo
-	{
-		public Point Location { get; set; } = Point.Empty;
-		public bool IsGear { get; set; }
-	}
-	
 	public static class Day3
 	{
+		public class SymbolInfo
+		{
+			public Point Location { get; set; } = Point.Empty;
+			public bool IsGear { get; set; }
+		}
+		
 		public static int Solve1(List<string> input)
 		{
 			int toReturn = 0;

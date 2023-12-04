@@ -5,45 +5,46 @@ using System.Linq;
 
 namespace AoC2023.Core
 {
-	public class Game
-	{
-		public List<SetContents> Sets { get; } = new();
-		public int GameID { get; set; }
-
-		public override string ToString()
-		{
-			return string.Format("Game: {0}. Sets: {1}. Power: {2}", GameID, string.Join("| ", Sets.Select(s => s.ToString()).ToArray()), DeterminePower());
-		}
-
-		public bool IsPossible(SetContents thresholds)
-		{
-			return Sets.All(s => thresholds.BlueStoneCount >= s.BlueStoneCount && thresholds.GreenStoneCount >= s.GreenStoneCount && thresholds.RedStoneCount >= s.RedStoneCount);
-		}
-
-
-		public int DeterminePower()
-		{
-			int maxRed = this.Sets.Select(s=>s.RedStoneCount).Max();
-			int maxGreen =  this.Sets.Select(s=>s.GreenStoneCount).Max();
-			int maxBlue =  this.Sets.Select(s=>s.BlueStoneCount).Max();
-			return maxRed * maxGreen * maxBlue;
-		}
-	}
-	
-	public class SetContents
-	{
-		public int RedStoneCount { get; set; }
-		public int GreenStoneCount { get; set; }
-		public int BlueStoneCount { get; set; }
-		
-		public override string ToString()
-		{
-			return string.Format("Red: {0}, Green: {1}, Blue: {2}", RedStoneCount, GreenStoneCount, BlueStoneCount);
-		}
-	}
-	
 	public static class Day2
 	{
+		public class Game
+		{
+			public List<SetContents> Sets { get; } = new();
+			public int GameID { get; set; }
+
+			public override string ToString()
+			{
+				return string.Format("Game: {0}. Sets: {1}. Power: {2}", GameID, string.Join("| ", Sets.Select(s => s.ToString()).ToArray()), DeterminePower());
+			}
+
+			public bool IsPossible(SetContents thresholds)
+			{
+				return Sets.All(s => thresholds.BlueStoneCount >= s.BlueStoneCount && thresholds.GreenStoneCount >= s.GreenStoneCount && thresholds.RedStoneCount >= s.RedStoneCount);
+			}
+
+
+			public int DeterminePower()
+			{
+				int maxRed = this.Sets.Select(s=>s.RedStoneCount).Max();
+				int maxGreen =  this.Sets.Select(s=>s.GreenStoneCount).Max();
+				int maxBlue =  this.Sets.Select(s=>s.BlueStoneCount).Max();
+				return maxRed * maxGreen * maxBlue;
+			}
+		}
+	
+		public class SetContents
+		{
+			public int RedStoneCount { get; set; }
+			public int GreenStoneCount { get; set; }
+			public int BlueStoneCount { get; set; }
+		
+			public override string ToString()
+			{
+				return string.Format("Red: {0}, Green: {1}, Blue: {2}", RedStoneCount, GreenStoneCount, BlueStoneCount);
+			}
+		}
+
+		
 		public static List<Game> DetermineGames(List<string> input)
 		{
 			var toReturn = new List<Game>();
