@@ -49,7 +49,7 @@ namespace AoC2023.Core
 			{
 				var currents = this.Steps.Keys.Where(k => k.EndsWith('A')).ToList();
 				long[] rips= new long[currents.Count];
-				// now per current calculate the # of steps to find the end. Then multiply these to find the answer. 
+				// now per current calculate the # of steps to find the end. Then find the least common multiple of the values. 
 				while(!currents.All(c=>c.EndsWith('Z')))
 				{
 					for(var index = 0; index < currents.Count; index++)
