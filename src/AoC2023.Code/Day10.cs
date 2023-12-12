@@ -232,14 +232,92 @@ namespace AoC2023.Core
 						SpreadMarking(GroundSeen[y].Length - 1, y);
 					}
 				}
-					
-
-				for(int i = 0; i < GroundSeen.Length; i++)
+				
+				// do the 'is point contained in polygon' operation. For every '.' found, we trace a line horizontally to the right, and count the vertical edges we cross
+				// this is done by calculating the '|', F[-]J and L[-]7 patterns, as these form vertical edges we could cross. Is the total even the point is outside the polygon, otherwise in it.
+				// When it's inside, we add it to the number we need to return.
+				var toReturn = 0;
+				for(int y = 0; y < GroundSeen.Length; y++)
 				{
-					Console.WriteLine(new String(GroundSeen[i]));
+					for(int x = 0; x < GroundSeen[0].Length; x++)
+					{
+						if(GroundSeen[y][x] != '.')
+						{
+							continue;
+						}
+
+						var numberOfEdgesCrossed = CalculateNumberOfEdgesCrossed(x, y);
+						if(numberOfEdgesCrossed % 2 == 0)
+						{
+							this.GroundSeen[y][x] = 'O';
+						}
+						else
+						{
+							this.GroundSeen[y][x] = 'I';
+							toReturn++;
+						}
+					}
+				}
+				return toReturn;
+			}
+
+
+			private int CalculateNumberOfEdgesCrossed(int x, int y)
+			{
+				int toReturn = 0;
+
+				var laX = x+1;
+				while(laX < GroundSeen[0].Length)
+				{
+					var tile = GroundSeen[y][laX];
+					switch(tile)
+					{
+						case '|':
+							toReturn++;
+							break;
+						case 'F':
+							if(ScanEdgePart(ref laX, y, 'J'))
+							{
+								toReturn++;
+							}
+							break;
+						case 'L':
+							if(ScanEdgePart(ref laX, y, '7'))
+							{
+								toReturn++;
+							}
+							break;
+					}
+					laX++;
 				}
 
-				return -1;
+				return toReturn;
+			}
+
+
+			private bool ScanEdgePart(ref int laX, int y, char stopCharForValidEdge)
+			{
+				bool toReturn = false;
+
+				laX++;
+				while(laX < GroundSeen[0].Length)
+				{
+					var tile = GroundSeen[y][laX];
+					if(tile == stopCharForValidEdge)
+					{
+						toReturn = true;
+						break;
+					}
+
+					if(tile != '-')
+					{
+						// invalid char for edge
+						break;
+					}
+					laX++;
+				}
+				
+				return toReturn;
 			}
 
 
