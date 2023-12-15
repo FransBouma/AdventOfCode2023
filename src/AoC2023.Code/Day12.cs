@@ -23,22 +23,24 @@ namespace AoC2023.Core
 			}
 
 			
-			public long CalculateAmountArrangements()
+			public long CalculateAmountArrangements(bool puzzle2)
 			{
 				long toReturn = 0;
 				for(int i = 0; i < Records.Count; i++)
 				{
 					var r = Records[i];
-					var counts = Counts[i];
-					var fragments = new List<string>();
-					// build the fragments to match. 
-					foreach(var c in counts)
+					var lengths = Counts[i];
+					if(puzzle2)
 					{
-						fragments.Add(new string('#', c));
+						r = r + "?" + r + "?" + r + "?" + r + "?" + r;
+						var originalLengths = Counts[i].ToArray();
+						lengths.AddRange(originalLengths);
+						lengths.AddRange(originalLengths);
+						lengths.AddRange(originalLengths);
+						lengths.AddRange(originalLengths);
 					}
-
-					//Console.WriteLine("Record: '{0}' with {1}", r, string.Join(',', counts.ToArray()));
-					var numberOfArrangements = ArrangeRow(r, fragments, string.Empty);
+					//Console.WriteLine("Record: '{0}' with {1}", r, string.Join(',', lengths.ToArray()));
+					var numberOfArrangements = ArrangeRow(r, lengths, new Dictionary<string, long>());
 					toReturn += numberOfArrangements;
 					//Console.WriteLine("Number of arrangements found: {0}", numberOfArrangements);
 				}
@@ -47,73 +49,78 @@ namespace AoC2023.Core
 			}
 
 
-			private long ArrangeRow(string r, List<string> fragments, string currentArrangement)
+			private long ArrangeRow(string r, List<int> lengths, Dictionary<string, long> cache)
 			{
-				int rIndex = 0;
-				if(fragments.Count <= 0)
+				var cacheKey = r + "|" + string.Join(",", lengths.ToArray());
+				if(cache.TryGetValue(cacheKey, out var result))
 				{
-					if(r.Contains('#'))
+					// already did this setup
+					return result;
+				}
+				// stop recursion checks
+				if(lengths.Count <= 0)
+				{
+					// check if we still have possible damaged springs in r. If not, we're done
+					if(r.Length>0 && r.Any(c => c == '#'))
 					{
+						// possible damaged springs left, not valid
 						return 0;
 					}
-					Console.WriteLine("\tArrangement found: {0}", currentArrangement);
+					// valid, because no more damaged springs left (we can transform ? to .)
 					return 1;
 				}
-				if(r.Length <= fragments.Sum(s => s.Length))
+
+				if(r.Length <= 0)
 				{
-					// not a valid arrangement possible
+					// still lengths left but no more record, invalid
 					return 0;
 				}
-				long toReturn = 0;
-				while(rIndex < r.Length) // crIndex can stop if the fragments we still have to do won't fit
+
+				var currentLength = lengths[0];
+				if(currentLength > r.Length)
 				{
-					var currentBlock = fragments[0];
-					if(CanPlaceBlock(r, currentBlock, rIndex))
-					{
-						var newFragments = new List<string>();
-						for(int i = 1; i < fragments.Count; i++)
-						{
-							newFragments.Add(fragments[i]);
-						}
-
-						toReturn += ArrangeRow(r.Substring(currentBlock.Length+1), newFragments, currentArrangement + new string('.', rIndex) + currentBlock + '.');
-					}
-					rIndex++;
+					// won't fit
+					return 0;
 				}
-
+				
+				long toReturn = 0;
+				// check if we can place a block at the start of r. If we see a ?, we do two things: *and* we see it as a . and move up one char and go into the recursion with that
+				// *and* we see it as a # and check if we can place our current block of damaged springs there. If so we skip that part + 1 (trailing .) and go into the recursion with that. 
+				switch(r[0])
+				{
+					case '.':
+						// move to next char
+						toReturn += ArrangeRow(r.Substring(1), lengths, cache);
+						break;
+					case '?':
+						// to do 2 things here gives us the different arrangements
+						// see it as a .:
+						toReturn += ArrangeRow(r.Substring(1), lengths, cache);
+						// see it as a #:
+						// check if the current set of damaged springs can be placed here
+						if(CanPlaceBlock(r, currentLength))
+						{
+							toReturn += ArrangeRow(r.Substring(currentLength+ ((r.Length<=currentLength) ? 0 : 1)), lengths.GetRange(1, lengths.Count - 1), cache);
+						}
+						break;
+					case '#':
+						// check if the current set of damaged springs can be placed here
+						if(CanPlaceBlock(r, currentLength))
+						{
+							toReturn += ArrangeRow(r.Substring(currentLength+ ((r.Length<=currentLength) ? 0 : 1)), lengths.GetRange(1, lengths.Count - 1), cache);
+						}
+						break;
+				}
+				cache[cacheKey] = toReturn;
 				return toReturn;
 			}
 
 
-			public bool CanPlaceBlock(string r, string s, int rIndex)
+			public bool CanPlaceBlock(string r, int length)
 			{
-				for(int i = 0; i < s.Length; i++)
-				{
-					if(rIndex + i >= r.Length)
-					{
-						// overflow
-						return false;
-					}
-					if(r[rIndex + i] == '.')
-					{
-						// can't place here
-						return false;
-					}
-
-					if(rIndex > 0 && r[rIndex - 1] == '#')
-					{
-						// can't place here because it would create a larger block
-						return false;
-					}
-				}
-				// check if we're at the end, or followed by a '.'. In case we're not, we can't place it here
-				var followCharOffset = rIndex + s.Length;
-				if(followCharOffset >= r.Length)
-				{
-					// at the end
-					return true;
-				}
-				return r[followCharOffset] != '#';
+				var toCheck = r[..length];
+				bool atEnd = r.Length == length;
+				return !toCheck.Contains('.') && (atEnd ? true : r[length] != '#');
 			}
 			
 			
@@ -124,13 +131,14 @@ namespace AoC2023.Core
 		public static long Solve1(List<string> input)
 		{
 			var resolver = new RecordSolver(input);
-			return resolver.CalculateAmountArrangements();
+			return resolver.CalculateAmountArrangements(false);
 		}
 
 
 		public static long Solve2(List<string> input)
 		{
-			return -1;
+			var resolver = new RecordSolver(input);
+			return resolver.CalculateAmountArrangements(true);
 		}
 	}
 }

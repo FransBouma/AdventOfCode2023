@@ -35,7 +35,7 @@ namespace AoC2023.Tests
 		{
 			var input = InputReader.GetInputAsStringList("..\\..\\..\\PuzzleInputs\\day12_example.txt");
 			Assert.IsTrue(input.Count>0);
-			Assert.AreEqual(2, Day12.Solve2(input));
+			Assert.AreEqual(525152, Day12.Solve2(input));
 		}
 		
 		
