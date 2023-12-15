@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using AoC2023.Core;
 using NUnit.Framework;
@@ -24,9 +25,13 @@ namespace AoC2023.Tests
 		[Test]
 		public void Puzzle1_Solver()
 		{
+			Stopwatch sw = new();
+			sw.Start();
 			var input = InputReader.GetInputAsStringList("..\\..\\..\\PuzzleInputs\\day12.txt");
 			Assert.IsTrue(input.Count>0);
 			Console.WriteLine(Day12.Solve1(input));
+			sw.Stop();
+			Console.WriteLine("Total time taken: {0}ms", sw.Elapsed.TotalMilliseconds);
 		}
 		
 		
@@ -42,9 +47,13 @@ namespace AoC2023.Tests
 		[Test]
 		public void Puzzle2_Solver()
 		{
+			Stopwatch sw = new();
+			sw.Start();
 			var input = InputReader.GetInputAsStringList("..\\..\\..\\PuzzleInputs\\day12.txt");
 			Assert.IsTrue(input.Count>0);
 			Console.WriteLine(Day12.Solve2(input));
+			sw.Stop();
+			Console.WriteLine("Total time taken: {0}ms", sw.Elapsed.TotalMilliseconds);
 		}
 	}
 }
