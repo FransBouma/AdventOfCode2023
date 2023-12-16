@@ -21,6 +21,7 @@ namespace AoC2023.Tests
 			Assert.IsTrue(input.Count>0);
 			Assert.AreEqual(405, Day13.Solve1(input));
 		}
+		
 
 		[Test]
 		public void Puzzle1_Solver()
@@ -41,6 +42,15 @@ namespace AoC2023.Tests
 			var input = InputReader.GetInputAsStringList("..\\..\\..\\PuzzleInputs\\day13_example.txt");
 			Assert.IsTrue(input.Count>0);
 			Assert.AreEqual(400, Day13.Solve2(input));
+		}
+		
+		
+		[Test]
+		public void Puzzle2_ExampleInput2()
+		{
+			var input = InputReader.GetInputAsStringList("..\\..\\..\\PuzzleInputs\\day13_example2.txt");
+			Assert.IsTrue(input.Count>0);
+			Assert.AreEqual(8, Day13.Solve2(input));
 		}
 		
 		
